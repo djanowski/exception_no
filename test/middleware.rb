@@ -5,10 +5,12 @@ require "rack"
 setup do
   Rack::Builder.new do |builder|
     builder.use ExceptionNo::Middleware,
-      host: "127.0.0.1",
-      port: 2525,
-      to: "root@localhost",
-      from: "service@localhost"
+      ExceptionNo.new(
+        host: "127.0.0.1",
+        port: 2525,
+        to: "root@localhost",
+        from: "service@localhost"
+      )
 
     builder.run(-> env { 1 / 0 })
   end
@@ -43,10 +45,12 @@ end
 test "doesn't raise when the notification fails" do |app|
   app = Rack::Builder.new do |builder|
     builder.use ExceptionNo::Middleware,
-      host: "127.0.0.1",
-      port: 2526,
-      to: "root@localhost",
-      from: "service@localhost"
+      ExceptionNo.new(
+        host: "127.0.0.1",
+        port: 2526,
+        to: "root@localhost",
+        from: "service@localhost"
+      )
 
     builder.run(-> env { 1 / 0 })
   end

@@ -50,9 +50,9 @@ class ExceptionNo
   EMAIL
 
   class Middleware
-    def initialize(app, config = {})
+    def initialize(app, notifier)
       @app = app
-      @notifier = ExceptionNo.new(config)
+      @notifier = notifier
     end
 
     def call(env)
