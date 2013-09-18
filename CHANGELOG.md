@@ -1,3 +1,9 @@
+0.0.3 - 2013-09-18
+==================
+
+* `ExceptionNo#deliver` can be used to control whether or not to send email
+  notifications. Typically useful in a non-production environment.
+
 0.0.2 - 2013-09-17
 ==================
 

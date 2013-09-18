@@ -2,7 +2,7 @@ require "net/smtp"
 require "erb"
 
 class ExceptionNo
-  VERSION = "0.0.2"
+  VERSION = "0.0.3"
 
   attr_accessor :backtrace_filter
   attr_accessor :deliver
