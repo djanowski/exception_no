@@ -5,10 +5,12 @@ class ExceptionNo
   VERSION = "0.0.2"
 
   attr_accessor :backtrace_filter
+  attr_accessor :deliver
 
   def initialize(config = {})
     @config = config
     @template = ERB.new(TEMPLATE)
+    @deliver = true
 
     @backtrace_filter = -> line { true }
   end
@@ -22,6 +24,8 @@ class ExceptionNo
   end
 
   def notify(exception, options = {})
+    return unless @deliver
+
     begin
       _notify(exception, options)
     rescue => notification_error

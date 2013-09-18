@@ -48,6 +48,10 @@ def capture_stderr
   end
 end
 
+prepare do
+  $smtp.outbox.clear
+end
+
 $smtp = SMTPServer.new(2525, "127.0.0.1")
 $smtp.start
 

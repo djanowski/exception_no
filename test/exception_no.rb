@@ -63,5 +63,13 @@ test "allows to filter the backtrace" do |notifier|
   assert !body.include?(Gem.path.first)
 end
 
+test "disable delivery" do |notifier|
+  notifier.deliver = false
+
+  notifier.notify(ArgumentError.new)
+
+  assert_equal $smtp.outbox.size, 0
+end
+
 $smtp.stop
 $smtp.join
