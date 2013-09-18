@@ -11,6 +11,8 @@ Gem::Specification.new do |s|
   s.files        = `git ls-files`.split("\n")
   s.test_files   = `git ls-files -- {test}/*`.split("\n")
 
+  s.license = "Unlicense"
+
   s.add_development_dependency "mini-smtp-server"
   s.add_development_dependency "cutest"
 end
