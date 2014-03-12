@@ -5,17 +5,17 @@ class ExceptionNo
   VERSION = "0.0.3"
 
   attr_accessor :backtrace_filter
-  attr_accessor :deliver
+  attr_accessor :behaviours
 
   def initialize(config = {})
     @config = config
     @template = ERB.new(TEMPLATE)
-    @deliver = true
+    @behaviours = [:deliver]
 
     @backtrace_filter = -> line { true }
   end
 
-  def _notify(exception, options = {})
+  def _deliver(exception, options = {})
     body = @template.result(binding)
 
     Net::SMTP.start(@config.fetch(:host), @config.fetch(:port, 25)) do |smtp|
@@ -23,11 +23,9 @@ class ExceptionNo
     end
   end
 
-  def notify(exception, options = {})
-    return unless @deliver
-
+  def deliver(exception, options)
     begin
-      _notify(exception, options)
+      _deliver(exception, options)
     rescue => notification_error
       $stderr.write("*** FAILED SENDING ERROR NOTIFICATION\n")
       $stderr.write("*** #{notification_error.class}: #{notification_error}\n")
@@ -37,6 +35,11 @@ class ExceptionNo
         $stderr.write("*** #{line}\n")
       end
     end
+  end
+
+  def notify(exception, options = {})
+    deliver(exception, options) if @behaviours.include?(:deliver)
+    raise exception if @behaviours.include?(:raise)
   end
 
   TEMPLATE = (<<-'EMAIL').gsub(/^ {2}/, '')

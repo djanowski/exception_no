@@ -10,6 +10,8 @@ setup do
 end
 
 test "deliver exception notification" do |notifier|
+  notifier.behaviours = [:deliver]
+
   ex = ArgumentError.new("Really bad argument")
 
   notifier.notify(ex)
@@ -26,6 +28,8 @@ test "deliver exception notification" do |notifier|
 end
 
 test "exception messages with multiple lines" do |notifier|
+  notifier.behaviours = [:deliver]
+
   notifier.notify(ArgumentError.new("A really\nbad\nargument"))
 
   headers, body = parse_email($smtp.outbox.last[:data])
@@ -34,6 +38,8 @@ test "exception messages with multiple lines" do |notifier|
 end
 
 test "includes backtrace information" do |notifier|
+  notifier.behaviours = [:deliver]
+
   begin
     raise ArgumentError, "A bad argument"
   rescue Exception => ex
@@ -47,6 +53,8 @@ test "includes backtrace information" do |notifier|
 end
 
 test "allows to filter the backtrace" do |notifier|
+  notifier.behaviours = [:deliver]
+
   notifier.backtrace_filter = -> line do
     !line.include?(Gem.path.first)
   end
@@ -64,11 +72,27 @@ test "allows to filter the backtrace" do |notifier|
 end
 
 test "disable delivery" do |notifier|
-  notifier.deliver = false
+  notifier.behaviours = []
 
   notifier.notify(ArgumentError.new)
 
   assert_equal $smtp.outbox.size, 0
+end
+
+test "raise exception" do |notifier|
+  notifier.behaviours = [:raise]
+
+  assert_raise(ArgumentError) { notifier.notify(ArgumentError.new) }
+
+  assert_equal $smtp.outbox.size, 0
+end
+
+test "raise exception and deliver notification" do |notifier|
+  notifier.behaviours = [:raise, :deliver]
+
+  assert_raise(ArgumentError) { notifier.notify(ArgumentError.new) }
+
+  assert_equal $smtp.outbox.size, 1
 end
 
 $smtp.stop
