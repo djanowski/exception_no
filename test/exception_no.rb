@@ -10,7 +10,7 @@ setup do
 end
 
 test "deliver exception notification" do |notifier|
-  notifier.behaviours = [:deliver]
+  notifier.behaviors = [:deliver]
 
   ex = ArgumentError.new("Really bad argument")
 
@@ -28,7 +28,7 @@ test "deliver exception notification" do |notifier|
 end
 
 test "exception messages with multiple lines" do |notifier|
-  notifier.behaviours = [:deliver]
+  notifier.behaviors = [:deliver]
 
   notifier.notify(ArgumentError.new("A really\nbad\nargument"))
 
@@ -38,7 +38,7 @@ test "exception messages with multiple lines" do |notifier|
 end
 
 test "includes backtrace information" do |notifier|
-  notifier.behaviours = [:deliver]
+  notifier.behaviors = [:deliver]
 
   begin
     raise ArgumentError, "A bad argument"
@@ -53,7 +53,7 @@ test "includes backtrace information" do |notifier|
 end
 
 test "allows to filter the backtrace" do |notifier|
-  notifier.behaviours = [:deliver]
+  notifier.behaviors = [:deliver]
 
   notifier.backtrace_filter = -> line do
     !line.include?(Gem.path.first)
@@ -72,7 +72,7 @@ test "allows to filter the backtrace" do |notifier|
 end
 
 test "disable delivery" do |notifier|
-  notifier.behaviours = []
+  notifier.behaviors = []
 
   notifier.notify(ArgumentError.new)
 
@@ -80,7 +80,7 @@ test "disable delivery" do |notifier|
 end
 
 test "raise exception" do |notifier|
-  notifier.behaviours = [:raise]
+  notifier.behaviors = [:raise]
 
   assert_raise(ArgumentError) { notifier.notify(ArgumentError.new) }
 
@@ -88,7 +88,7 @@ test "raise exception" do |notifier|
 end
 
 test "raise exception and deliver notification" do |notifier|
-  notifier.behaviours = [:raise, :deliver]
+  notifier.behaviors = [:raise, :deliver]
 
   assert_raise(ArgumentError) { notifier.notify(ArgumentError.new) }
 

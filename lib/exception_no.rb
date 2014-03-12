@@ -5,12 +5,12 @@ class ExceptionNo
   VERSION = "0.0.3"
 
   attr_accessor :backtrace_filter
-  attr_accessor :behaviours
+  attr_accessor :behaviors
 
   def initialize(config = {})
     @config = config
     @template = ERB.new(TEMPLATE)
-    @behaviours = [:deliver]
+    @behaviors = [:deliver]
 
     @backtrace_filter = -> line { true }
   end
@@ -38,8 +38,8 @@ class ExceptionNo
   end
 
   def notify(exception, options = {})
-    deliver(exception, options) if @behaviours.include?(:deliver)
-    raise exception if @behaviours.include?(:raise)
+    deliver(exception, options) if @behaviors.include?(:deliver)
+    raise exception if @behaviors.include?(:raise)
   end
 
   TEMPLATE = (<<-'EMAIL').gsub(/^ {2}/, '')
