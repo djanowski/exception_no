@@ -13,6 +13,7 @@ Gem::Specification.new do |s|
 
   s.license = "Unlicense"
 
-  s.add_development_dependency "mini-smtp-server"
   s.add_development_dependency "cutest"
+  s.add_development_dependency "mini-smtp-server"
+  s.add_development_dependency "rack"
 end
