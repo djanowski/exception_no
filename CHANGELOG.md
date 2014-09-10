@@ -1,4 +1,4 @@
-0.0.4 - unreleased
+0.0.5 - 2014-09-10
 ==================
 
 * The middleware now extracts the request IP address.
