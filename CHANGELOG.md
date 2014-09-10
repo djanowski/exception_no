@@ -1,6 +1,8 @@
 0.0.4 - unreleased
 ==================
 
+* The middleware now extracts the request IP address.
+
 * The middleware now extracts the request body.
 
 * Added `ExceptionNo#run` which takes a block and notifies about errors.

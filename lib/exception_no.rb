@@ -89,6 +89,7 @@ class ExceptionNo
       parts << "#{req.request_method} #{req.url}"
       parts << "User-Agent: #{req.user_agent}" if req.user_agent
       parts << "Referrer: #{req.referrer}" if req.referrer
+      parts << "IP: #{req.ip}" if req.ip
       parts << "Cookie: #{req.env["HTTP_COOKIE"]}" if req.cookies.size > 0
 
       if req.form_data?

@@ -26,6 +26,7 @@ test "extracts interesting stuff from the request" do |app|
     "HTTP_USER_AGENT" => "Mozilla/4.0 (compatible)",
     "HTTP_REFERER"    => "/other",
     "HTTP_COOKIE"     => "foo=bar",
+    "REMOTE_ADDR"     => "127.0.0.2",
   )
 
   begin
@@ -40,6 +41,7 @@ test "extracts interesting stuff from the request" do |app|
   assert body.include?("User-Agent: Mozilla/4.0 (compatible)")
   assert body.include?("Referrer: /other")
   assert body.include?("Cookie: foo=bar")
+  assert body.include?("IP: 127.0.0.2")
 end
 
 test "extracts the posted form" do |app|
