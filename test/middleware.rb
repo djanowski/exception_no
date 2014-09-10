@@ -33,7 +33,7 @@ test "extracts interesting stuff from the request" do |app|
   rescue ZeroDivisionError
   end
 
-  headers, body = parse_email($smtp.outbox.last[:data])
+  headers, body = parse_email($smtp.outbox.pop[:data])
 
   assert_equal headers["Subject"], "ZeroDivisionError: divided by 0"
   assert body.include?("GET http://example.org/baz")

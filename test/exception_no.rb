@@ -16,7 +16,7 @@ test "deliver exception notification" do |notifier|
 
   notifier.notify(ex)
 
-  email = $smtp.outbox.last
+  email = $smtp.outbox.pop
 
   assert_equal email[:to], "<root@localhost>"
   assert_equal email[:from], "<service@localhost>"
@@ -32,7 +32,7 @@ test "exception messages with multiple lines" do |notifier|
 
   notifier.notify(ArgumentError.new("A really\nbad\nargument"))
 
-  headers, body = parse_email($smtp.outbox.last[:data])
+  headers, body = parse_email($smtp.outbox.pop[:data])
 
   assert_equal headers["Subject"], "ArgumentError: A really bad argument"
 end
@@ -46,7 +46,7 @@ test "includes backtrace information" do |notifier|
     notifier.notify(ex)
   end
 
-  headers, body = parse_email($smtp.outbox.last[:data])
+  headers, body = parse_email($smtp.outbox.pop[:data])
 
   assert body.include?(__FILE__)
   assert body.include?(Gem.path.first)
@@ -65,7 +65,7 @@ test "allows to filter the backtrace" do |notifier|
     notifier.notify(ex)
   end
 
-  headers, body = parse_email($smtp.outbox.last[:data])
+  headers, body = parse_email($smtp.outbox.pop[:data])
 
   assert body.include?(__FILE__)
   assert !body.include?(Gem.path.first)
@@ -94,6 +94,3 @@ test "raise exception and deliver notification" do |notifier|
 
   assert_equal $smtp.outbox.size, 1
 end
-
-$smtp.stop
-$smtp.join

@@ -4,13 +4,52 @@ require "mini-smtp-server"
 require_relative "../lib/exception_no"
 
 class SMTPServer < MiniSmtpServer
-  def outbox
-    @outbox ||= []
+  attr :outbox
+
+  def initialize(*args)
+    @outbox = QueueWithTimeout.new
+    super(*args)
   end
 
   def new_message_event(message)
-    outbox << message
+    @outbox << message
     true
+  end
+end
+
+# Source: http://spin.atomicobject.com/2014/07/07/ruby-queue-pop-timeout
+class QueueWithTimeout
+  def initialize
+    @mutex = Mutex.new
+    @queue = []
+    @recieved = ConditionVariable.new
+  end
+
+  def <<(x)
+    @mutex.synchronize do
+      @queue << x
+      @recieved.signal
+    end
+  end
+
+  def size
+    @queue.size
+  end
+
+  def clear
+    @mutex.synchronize do
+      @queue.clear
+    end
+  end
+
+  def pop(timeout = 2)
+    @mutex.synchronize do
+      if @queue.empty?
+        @recieved.wait(@mutex, timeout) if timeout != 0
+        raise ThreadError, "queue empty" if @queue.empty?
+      end
+      @queue.pop
+    end
   end
 end
 
