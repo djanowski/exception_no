@@ -42,6 +42,45 @@ test "extracts interesting stuff from the request" do |app|
   assert body.include?("Cookie: foo=bar")
 end
 
+test "extracts the posted form" do |app|
+  env = Rack::MockRequest.env_for(
+    "/baz",
+    "REQUEST_METHOD" => "POST",
+    input: "foo=bar&baz=qux",
+  )
+
+  begin
+    app.call(env)
+  rescue ZeroDivisionError
+  end
+
+  headers, body = parse_email($smtp.outbox.pop[:data])
+
+  assert_equal headers["Subject"], "ZeroDivisionError: divided by 0"
+  assert body.include?("POST http://example.org/baz\r\n")
+  assert body.include?(%Q[  {"foo"=>"bar", "baz"=>"qux"}])
+end
+
+test "extracts the request body" do |app|
+  env = Rack::MockRequest.env_for(
+    "/baz",
+    "REQUEST_METHOD" => "POST",
+    "CONTENT_TYPE" => "text/plain; charset=utf-8",
+    input: "foo:bar",
+  )
+
+  begin
+    app.call(env)
+  rescue ZeroDivisionError
+  end
+
+  headers, body = parse_email($smtp.outbox.pop[:data])
+
+  assert_equal headers["Subject"], "ZeroDivisionError: divided by 0"
+  assert body.include?("POST http://example.org/baz\r\n")
+  assert body.include?(%Q[  foo:bar])
+end
+
 test "doesn't raise when the notification fails" do |app|
   app = Rack::Builder.new do |builder|
     builder.use ExceptionNo::Middleware,

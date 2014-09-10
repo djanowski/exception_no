@@ -1,5 +1,6 @@
 require "net/smtp"
 require "erb"
+require "pp"
 
 class ExceptionNo
   VERSION = "0.0.4"
@@ -89,6 +90,20 @@ class ExceptionNo
       parts << "User-Agent: #{req.user_agent}" if req.user_agent
       parts << "Referrer: #{req.referrer}" if req.referrer
       parts << "Cookie: #{req.env["HTTP_COOKIE"]}" if req.cookies.size > 0
+
+      if req.form_data?
+        body = req.POST.pretty_inspect
+      else
+        req.body.rewind
+
+        body = req.body.read
+
+        body = nil if body.empty?
+      end
+
+      if body
+        parts << "Body: \n#{body.gsub(/^/, "  ")}"
+      end
 
       parts
     end
