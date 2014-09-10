@@ -15,7 +15,7 @@ class ExceptionNo
     @backtrace_filter = -> line { true }
   end
 
-  def _deliver(exception, options = {})
+  def _deliver(exception, env = {})
     body = @template.result(binding)
 
     Net::SMTP.start(@config.fetch(:host), @config.fetch(:port, 25)) do |smtp|
@@ -42,12 +42,20 @@ class ExceptionNo
     raise exception if @behaviors.include?(:raise)
   end
 
+  def run(env = {})
+    begin
+      yield
+    rescue Exception => ex
+      notify(ex, env)
+    end
+  end
+
   TEMPLATE = (<<-'EMAIL').gsub(/^ {2}/, '')
   From: <%= @config[:from_alias] %> <<%= @config[:from] %>>
   To: <<%= @config[:to] %>>
   Subject: <%= exception.class %>: <%= exception.message.split.join(" ") %>
 
-  <%= options[:body] %>
+  <%= env.map { |*parts| parts.join(": ") }.join("\n") %>
 
   <%= "~" * 80 %>
 
@@ -66,7 +74,7 @@ class ExceptionNo
       begin
         @app.call(env)
       rescue Exception => e
-        @notifier.notify(e, body: extract_env(env))
+        @notifier.notify(e, extract_env(env))
 
         raise e
       end
@@ -82,7 +90,7 @@ class ExceptionNo
       parts << "Referrer: #{req.referrer}" if req.referrer
       parts << "Cookie: #{req.env["HTTP_COOKIE"]}" if req.cookies.size > 0
 
-      parts.join("\n")
+      parts
     end
   end
 end

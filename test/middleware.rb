@@ -36,7 +36,7 @@ test "extracts interesting stuff from the request" do |app|
   headers, body = parse_email($smtp.outbox.pop[:data])
 
   assert_equal headers["Subject"], "ZeroDivisionError: divided by 0"
-  assert body.include?("GET http://example.org/baz")
+  assert body.include?("GET http://example.org/baz\r\n")
   assert body.include?("User-Agent: Mozilla/4.0 (compatible)")
   assert body.include?("Referrer: /other")
   assert body.include?("Cookie: foo=bar")

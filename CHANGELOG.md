@@ -1,3 +1,8 @@
+0.0.4 - unreleased
+==================
+
+* Added `ExceptionNo#run` which takes a block and notifies about errors.
+
 0.0.3 - 2013-09-18
 ==================
 

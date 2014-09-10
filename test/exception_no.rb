@@ -98,3 +98,25 @@ test "raise exception and deliver notification" do |notifier|
 
   assert $smtp.outbox.pop
 end
+
+test "block behavior" do |notifier|
+  notifier.behaviors = [:deliver]
+
+  notifier.run do
+    raise ArgumentError, "A bad argument"
+  end
+
+  assert $smtp.outbox.pop
+end
+
+test "block with environment" do |notifier|
+  notifier.behaviors = [:deliver]
+
+  notifier.run("Foo" => "Bar") do
+    raise ArgumentError, "A bad argument"
+  end
+
+  headers, body = parse_email($smtp.outbox.pop[:data])
+
+  assert body.include?("Foo: Bar")
+end
