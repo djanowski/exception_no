@@ -19,6 +19,8 @@ end
 
 # Source: http://spin.atomicobject.com/2014/07/07/ruby-queue-pop-timeout
 class QueueWithTimeout
+  Timeout = Class.new(StandardError)
+
   def initialize
     @mutex = Mutex.new
     @queue = []
@@ -46,7 +48,7 @@ class QueueWithTimeout
     @mutex.synchronize do
       if @queue.empty?
         @recieved.wait(@mutex, timeout) if timeout != 0
-        raise ThreadError, "queue empty" if @queue.empty?
+        raise Timeout, "queue empty" if @queue.empty?
       end
       @queue.pop
     end

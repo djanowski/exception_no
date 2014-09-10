@@ -76,7 +76,9 @@ test "disable delivery" do |notifier|
 
   notifier.notify(ArgumentError.new)
 
-  assert_equal $smtp.outbox.size, 0
+  assert_raise(QueueWithTimeout::Timeout) do
+    $smtp.outbox.pop(0.5)
+  end
 end
 
 test "raise exception" do |notifier|
@@ -84,7 +86,9 @@ test "raise exception" do |notifier|
 
   assert_raise(ArgumentError) { notifier.notify(ArgumentError.new) }
 
-  assert_equal $smtp.outbox.size, 0
+  assert_raise(QueueWithTimeout::Timeout) do
+    $smtp.outbox.pop(0.5)
+  end
 end
 
 test "raise exception and deliver notification" do |notifier|
@@ -92,5 +96,5 @@ test "raise exception and deliver notification" do |notifier|
 
   assert_raise(ArgumentError) { notifier.notify(ArgumentError.new) }
 
-  assert_equal $smtp.outbox.size, 1
+  assert $smtp.outbox.pop
 end
