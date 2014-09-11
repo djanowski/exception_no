@@ -1,3 +1,9 @@
+0.0.6 - 2014-09-11
+==================
+
+* The middleware now accepts a `:sanitizer` proc that filters the environment
+  for sensitive parameters before notifying (e.g. credit card numbers).
+
 0.0.5 - 2014-09-10
 ==================
 
