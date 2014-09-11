@@ -66,9 +66,10 @@ class ExceptionNo
   EMAIL
 
   class Middleware
-    def initialize(app, notifier)
+    def initialize(app, notifier, options = {})
       @app = app
       @notifier = notifier
+      @sanitizer = options.fetch(:sanitizer, -> _ { _ })
     end
 
     def call(env)
@@ -93,17 +94,21 @@ class ExceptionNo
       parts << "Cookie: #{req.env["HTTP_COOKIE"]}" if req.cookies.size > 0
 
       if req.form_data?
-        body = req.POST.pretty_inspect
+        body = @sanitizer.call(req.POST).pretty_inspect
       else
         req.body.rewind
 
         body = req.body.read
 
-        body = nil if body.empty?
+        if body.empty?
+          body = nil
+        else
+          body = @sanitizer.call(body)
+        end
       end
 
       if body
-        parts << "Body: \n#{body.gsub(/^/, "  ")}"
+        parts << "Body: \n\n#{body.gsub(/^/, "  ")}"
       end
 
       parts
