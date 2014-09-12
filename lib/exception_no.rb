@@ -5,7 +5,7 @@ require "erb"
 require "pp"
 
 class ExceptionNo
-  VERSION = "0.0.6"
+  VERSION = "0.0.7"
 
   attr_accessor :backtrace_filter
   attr_accessor :behaviors

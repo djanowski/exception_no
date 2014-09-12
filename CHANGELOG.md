@@ -1,3 +1,8 @@
+0.0.7 - 2014-09-12
+==================
+
+* By default, assume UTF-8 encoding for the email body.
+
 0.0.6 - 2014-09-11
 ==================
 
