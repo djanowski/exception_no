@@ -1,3 +1,5 @@
+# encoding: utf-8
+
 require_relative "prelude"
 
 setup do
@@ -119,4 +121,12 @@ test "block with environment" do |notifier|
   headers, body = parse_email($smtp.outbox.pop[:data])
 
   assert body.include?("Foo: Bar")
+end
+
+test "UTF-8 encoding" do |notifier|
+  ex = ArgumentError.new("Aló")
+
+  notifier.notify(ex)
+
+  assert $smtp.outbox.pop
 end
